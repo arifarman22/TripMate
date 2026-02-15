@@ -3,7 +3,8 @@ const tripRepository = require('../repositories/trip.repository');
 const AppError = require('../utils/AppError');
 
 const requireTripMember = asyncHandler(async (req, res, next) => {
-  const trip = await tripRepository.findById(req.params.id);
+  const tripId = req.params.id || req.params.tripId;
+  const trip = await tripRepository.findById(tripId);
   if (!trip) throw new AppError('Trip not found', 404);
 
   const isMember = trip.members.some(m => m.userId === req.user.id);
@@ -14,7 +15,8 @@ const requireTripMember = asyncHandler(async (req, res, next) => {
 });
 
 const requireTripAdmin = asyncHandler(async (req, res, next) => {
-  const trip = await tripRepository.findById(req.params.id);
+  const tripId = req.params.id || req.params.tripId;
+  const trip = await tripRepository.findById(tripId);
   if (!trip) throw new AppError('Trip not found', 404);
 
   const isAdmin = trip.members.some(m => m.userId === req.user.id && m.role === 'admin');

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { expenseService } from '../services/api';
+import { expenseService } from '../services/expenseService';
 import Modal from './Modal';
 
 export default function AddExpenseModal({ tripId, members, currency, onClose, onSuccess }) {

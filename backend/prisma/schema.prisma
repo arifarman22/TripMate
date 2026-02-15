@@ -30,7 +30,7 @@ model Trip {
   name        String
   description String?
   currency    String    @default("USD")
-  budget      Decimal?  @db.Decimal(10, 2)
+  budget      Float?
   startDate   DateTime?
   endDate     DateTime?
   createdAt   DateTime  @default(now())
@@ -65,7 +65,7 @@ model Expense {
   tripId      String
   paidById    String
   description String
-  amount      Decimal  @db.Decimal(10, 2)
+  amount      Float  
   category    String?
   date        DateTime @default(now())
   createdAt   DateTime @default(now())
@@ -85,7 +85,7 @@ model ExpenseSplit {
   id        String  @id @default(uuid())
   expenseId String
   userId    String
-  amount    Decimal @db.Decimal(10, 2)
+  amount    Float 
 
   expense Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
 
@@ -100,7 +100,7 @@ model Settlement {
   tripId     String
   payerId    String
   receiverId String
-  amount     Decimal   @db.Decimal(10, 2)
+  amount     Float   
   settled    Boolean   @default(false)
   settledAt  DateTime?
   createdAt  DateTime  @default(now())
@@ -123,7 +123,7 @@ model Notification {
   type      String
   title     String
   message   String
-  data      Json?
+  data      String?
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
 
