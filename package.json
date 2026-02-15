@@ -1,0 +1,22 @@
+{
+  "name": "tripmate",
+  "version": "1.0.0",
+  "description": "TripMate - Smart Expense Splitter",
+  "private": true,
+  "scripts": {
+    "install:backend": "cd backend && npm install",
+    "install:frontend": "cd frontend && npm install",
+    "install:all": "npm run install:backend && npm run install:frontend",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "setup": "npm run install:all && cd backend && npm run prisma:generate",
+    "db:setup": "cd backend && npm run prisma:migrate && npm run prisma:seed",
+    "build": "cd frontend && npm run build",
+    "deploy:prep": "npm run install:all && cd backend && npm run prisma:generate && cd ../frontend && npm run build",
+    "vercel-build": "npm run deploy:prep"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}

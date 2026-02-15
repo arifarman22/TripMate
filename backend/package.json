@@ -1,0 +1,40 @@
+{
+  "name": "tripmate-backend",
+  "version": "1.0.0",
+  "description": "TripMate Smart Expense Splitter - Backend API",
+  "main": "src/server.js",
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy",
+    "prisma:studio": "prisma studio",
+    "prisma:seed": "node prisma/seed.js",
+    "db:reset": "prisma migrate reset",
+    "db:push": "prisma db push",
+    "vercel-build": "prisma generate"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.7.0",
+    "express": "^4.18.2",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5",
+    "express-validator": "^7.0.1",
+    "morgan": "^1.10.0",
+    "winston": "^3.11.0",
+    "express-rate-limit": "^7.1.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "prisma": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

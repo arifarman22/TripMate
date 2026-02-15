@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  trips         TripMember[]
+  expenses      Expense[]
+  paymentsFrom  Settlement[] @relation("PayerSettlements")
+  paymentsTo    Settlement[] @relation("ReceiverSettlements")
+  notifications Notification[]
+
+  @@index([email])
+  @@map("users")
+}
+
+model Trip {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  currency    String    @default("USD")
+  budget      Decimal?  @db.Decimal(10, 2)
+  startDate   DateTime?
+  endDate     DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  members     TripMember[]
+  expenses    Expense[]
+  settlements Settlement[]
+
+  @@index([createdAt])
+  @@map("trips")
+}
+
+model TripMember {
+  id        String   @id @default(uuid())
+  userId    String
+  tripId    String
+  role      String   @default("member")
+  joinedAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, tripId])
+  @@index([userId])
+  @@index([tripId])
+  @@map("trip_members")
+}
+
+model Expense {
+  id          String   @id @default(uuid())
+  tripId      String
+  paidById    String
+  description String
+  amount      Decimal  @db.Decimal(10, 2)
+  category    String?
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  trip   Trip          @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  paidBy User          @relation(fields: [paidById], references: [id])
+  splits ExpenseSplit[]
+
+  @@index([tripId])
+  @@index([paidById])
+  @@index([date])
+  @@map("expenses")
+}
+
+model ExpenseSplit {
+  id        String  @id @default(uuid())
+  expenseId String
+  userId    String
+  amount    Decimal @db.Decimal(10, 2)
+
+  expense Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+
+  @@unique([expenseId, userId])
+  @@index([userId])
+  @@index([expenseId])
+  @@map("expense_splits")
+}
+
+model Settlement {
+  id         String    @id @default(uuid())
+  tripId     String
+  payerId    String
+  receiverId String
+  amount     Decimal   @db.Decimal(10, 2)
+  settled    Boolean   @default(false)
+  settledAt  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  trip     Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  payer    User @relation("PayerSettlements", fields: [payerId], references: [id])
+  receiver User @relation("ReceiverSettlements", fields: [receiverId], references: [id])
+
+  @@index([tripId])
+  @@index([payerId])
+  @@index([receiverId])
+  @@index([settled])
+  @@map("settlements")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String
+  title     String
+  message   String
+  data      Json?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
+  @@map("notifications")
+}

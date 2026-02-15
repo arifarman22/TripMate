@@ -1,0 +1,24 @@
+// Supabase Configuration for Prisma
+// This file shows how to configure Prisma for optimal Supabase performance
+
+generator client {
+  provider = "prisma-client-js"
+  // Optimize for serverless environments
+  previewFeatures = ["jsonProtocol"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // Optional: Use direct connection for migrations when using connection pooling
+  directUrl = env("DIRECT_URL")
+}
+
+// Connection Pooling Best Practices:
+// 1. Use Transaction mode pooling for most queries
+// 2. Use Direct URL for migrations and schema changes
+// 3. Set connection_limit=1 for serverless deployments
+
+// Example .env configuration:
+// DATABASE_URL="postgresql://postgres.ref:pass@pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1"
+// DIRECT_URL="postgresql://postgres:pass@db.ref.supabase.co:5432/postgres"
