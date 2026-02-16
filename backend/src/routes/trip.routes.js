@@ -21,9 +21,6 @@ const router = express.Router();
 
 router.use(protect);
 
-// Expense routes
-router.use('/:tripId/expenses', expenseRoutes);
-
 // Create trip (Team Lead only)
 router.post('/',
   [
@@ -90,5 +87,8 @@ router.get('/:id/my-balance', requireTripMember, getUserBalance);
 
 // Get suggested payments (members only)
 router.get('/:id/suggested-payments', requireTripMember, getSuggestedPayments);
+
+// Expense routes (must be last to avoid conflicts)
+router.use('/:tripId/expenses', expenseRoutes);
 
 module.exports = router;
