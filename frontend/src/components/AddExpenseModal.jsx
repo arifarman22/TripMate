@@ -24,11 +24,11 @@ export default function AddExpenseModal({ tripId, members, currency, onClose, on
         amount: (amount / members.length).toFixed(2)
       }));
 
-      const expense = await expenseService.create({
-        tripId,
+      const expense = await expenseService.createExpense(tripId, {
         description: formData.description,
         amount,
         category: formData.category,
+        splitType,
         splits
       });
 
