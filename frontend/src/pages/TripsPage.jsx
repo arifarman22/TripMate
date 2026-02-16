@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { tripService } from '../services/tripService'
+import { useAuth } from '../context/AuthContext'
 import { 
   MapPin, 
   Plus, 
@@ -14,14 +15,17 @@ import LoadingSpinner from '../components/LoadingSpinner'
 import CreateTripModal from '../components/CreateTripModal'
 
 const TripsPage = () => {
+  const { user } = useAuth()
   const [trips, setTrips] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [showCreateModal, setShowCreateModal] = useState(false)
 
   useEffect(() => {
-    fetchTrips()
-  }, [])
+    if (user) {
+      fetchTrips()
+    }
+  }, [user])
 
   const fetchTrips = async () => {
     try {

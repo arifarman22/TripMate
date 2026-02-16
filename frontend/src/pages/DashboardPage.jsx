@@ -30,8 +30,10 @@ const DashboardPage = () => {
   })
 
   useEffect(() => {
-    fetchTrips()
-  }, [])
+    if (user) {
+      fetchTrips()
+    }
+  }, [user])
 
   const fetchTrips = async () => {
     try {
