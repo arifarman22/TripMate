@@ -16,10 +16,12 @@ import {
 } from 'lucide-react'
 import LoadingSpinner from '../components/LoadingSpinner'
 import MiniAnalytics from '../components/MiniAnalytics'
+import TripInvitationCard from '../components/TripInvitationCard'
 
 const DashboardPage = () => {
   const { user } = useAuth()
   const [trips, setTrips] = useState([])
+  const [pendingInvitations, setPendingInvitations] = useState([])
   const [loading, setLoading] = useState(true)
   const [recentExpenses, setRecentExpenses] = useState([])
   const [stats, setStats] = useState({
@@ -32,6 +34,7 @@ const DashboardPage = () => {
   useEffect(() => {
     if (user) {
       fetchTrips()
+      fetchPendingInvitations()
     }
   }, [user])
 
@@ -45,6 +48,49 @@ const DashboardPage = () => {
       console.error('Error fetching trips:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchPendingInvitations = async () => {
+    try {
+      // Mock pending invitations - in real app, this would come from notifications
+      // For now, we'll check if user just joined any trips
+      const allTrips = await tripService.getTrips()
+      const recentJoins = allTrips.filter(trip => {
+        const userMember = trip.members.find(m => m.user.email === user.email)
+        if (!userMember) return false
+        const joinedRecently = new Date() - new Date(userMember.joinedAt) < 24 * 60 * 60 * 1000 // Last 24 hours
+        return joinedRecently && userMember.role === 'member'
+      })
+      
+      const invitations = recentJoins.map(trip => ({
+        tripId: trip.id,
+        tripName: trip.name,
+        description: trip.description,
+        invitedBy: trip.members.find(m => m.role === 'admin')?.user.name || 'Trip Admin',
+        memberCount: trip.members.length,
+        budget: trip.budget,
+        currency: trip.currency
+      }))
+      
+      setPendingInvitations(invitations)
+    } catch (error) {
+      console.error('Error fetching invitations:', error)
+    }
+  }
+
+  const handleAcceptInvitation = async (tripId) => {
+    // Already accepted by being a member, just navigate
+    setPendingInvitations(prev => prev.filter(inv => inv.tripId !== tripId))
+  }
+
+  const handleDeclineInvitation = async (tripId) => {
+    try {
+      await tripService.removeMember(tripId, user.id)
+      setPendingInvitations(prev => prev.filter(inv => inv.tripId !== tripId))
+      setTrips(prev => prev.filter(trip => trip.id !== tripId))
+    } catch (error) {
+      throw error
     }
   }
 
@@ -183,6 +229,23 @@ const DashboardPage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Recent Trips */}
         <div className="lg:col-span-2 space-y-8">
+          {/* Pending Invitations */}
+          {pendingInvitations.length > 0 && (
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Pending Invitations</h2>
+              <div className="space-y-4">
+                {pendingInvitations.map((invitation) => (
+                  <TripInvitationCard
+                    key={invitation.tripId}
+                    invitation={invitation}
+                    onAccept={handleAcceptInvitation}
+                    onDecline={handleDeclineInvitation}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Trips Section */}
           <div>
             <div className="flex items-center justify-between mb-6">
