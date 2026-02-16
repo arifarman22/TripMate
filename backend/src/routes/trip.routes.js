@@ -9,7 +9,8 @@ const {
   addMember, 
   removeMember, 
   getBalances,
-  getSuggestedPayments
+  getSuggestedPayments,
+  getUserBalance
 } = require('../controllers/trip.controller');
 const { protect } = require('../middlewares/auth');
 const { requireTripMember, requireTripAdmin } = require('../middlewares/tripAccess');
@@ -83,6 +84,9 @@ router.delete('/:id/members',
 
 // Get balances (members only)
 router.get('/:id/balances', requireTripMember, getBalances);
+
+// Get user's own balance (members only)
+router.get('/:id/my-balance', requireTripMember, getUserBalance);
 
 // Get suggested payments (members only)
 router.get('/:id/suggested-payments', requireTripMember, getSuggestedPayments);

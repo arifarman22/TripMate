@@ -10,14 +10,17 @@ export default function BalanceSummary({ balances, members, currency }) {
         <p className="text-gray-500 text-center py-4">No balances yet</p>
       ) : (
         <div className="space-y-3">
-          {Object.entries(balances).map(([userId, balance]) => (
-            <div key={userId} className="flex justify-between items-center pb-3 border-b last:border-0">
-              <span className="font-medium text-gray-900">{getMemberName(userId)}</span>
-              <span className={`font-semibold ${balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {balance >= 0 ? '+' : ''}{currency} {balance.toFixed(2)}
-              </span>
-            </div>
-          ))}
+          {Object.entries(balances).map(([userId, balance]) => {
+            const numBalance = Number(balance) || 0;
+            return (
+              <div key={userId} className="flex justify-between items-center pb-3 border-b last:border-0">
+                <span className="font-medium text-gray-900">{getMemberName(userId)}</span>
+                <span className={`font-semibold ${numBalance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {numBalance >= 0 ? '+' : ''}{currency} {numBalance.toFixed(2)}
+                </span>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

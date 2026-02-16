@@ -187,6 +187,45 @@ const calculateSuggestedPayments = async (tripId, userId) => {
   return payments;
 };
 
+const getUserBalance = async (tripId, userId) => {
+  const trip = await tripRepository.findById(tripId);
+  if (!trip) throw new AppError('Trip not found', 404);
+
+  const isMember = trip.members.some(m => m.userId === userId);
+  if (!isMember) throw new AppError('Access denied', 403);
+
+  const expenses = await tripRepository.getExpenses(tripId);
+  
+  let totalPaid = 0;
+  let totalOwed = 0;
+  const userExpenses = [];
+  
+  expenses.forEach(expense => {
+    // Check if user paid for this expense
+    if (expense.paidById === userId) {
+      totalPaid += parseFloat(expense.amount);
+      userExpenses.push(expense);
+    }
+    
+    // Check if user owes for this expense
+    const userSplit = expense.splits.find(split => split.userId === userId);
+    if (userSplit) {
+      totalOwed += parseFloat(userSplit.amount);
+    }
+  });
+  
+  const netBalance = totalPaid - totalOwed;
+  
+  return {
+    userId,
+    totalPaid: Number(totalPaid.toFixed(2)),
+    totalOwed: Number(totalOwed.toFixed(2)),
+    netBalance: Number(netBalance.toFixed(2)),
+    expensesPaid: userExpenses.length,
+    status: netBalance > 0 ? 'owed' : netBalance < 0 ? 'owes' : 'settled'
+  };
+};
+
 module.exports = { 
   createTrip, 
   getUserTrips, 
@@ -196,5 +235,6 @@ module.exports = {
   addMember, 
   removeMember, 
   calculateBalances,
-  calculateSuggestedPayments
+  calculateSuggestedPayments,
+  getUserBalance
 };

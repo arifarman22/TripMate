@@ -29,7 +29,7 @@ model Trip {
   id          String    @id @default(uuid())
   name        String
   description String?
-  currency    String    @default("USD")
+  currency    String    @default("BDT")
   budget      Float?
   startDate   DateTime?
   endDate     DateTime?

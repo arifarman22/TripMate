@@ -46,6 +46,11 @@ const getSuggestedPayments = asyncHandler(async (req, res) => {
   res.json({ success: true, data: payments });
 });
 
+const getUserBalance = asyncHandler(async (req, res) => {
+  const balance = await tripService.getUserBalance(req.params.id, req.user.id);
+  res.json({ success: true, data: balance });
+});
+
 module.exports = { 
   createTrip, 
   getTrips, 
@@ -55,5 +60,6 @@ module.exports = {
   addMember, 
   removeMember, 
   getBalances,
-  getSuggestedPayments
+  getSuggestedPayments,
+  getUserBalance
 };

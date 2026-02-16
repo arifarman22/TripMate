@@ -7,7 +7,7 @@ const CreateTripModal = ({ onClose, onTripCreated }) => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    currency: 'USD',
+    currency: 'BDT',
     budget: '',
     startDate: '',
     endDate: ''
@@ -104,12 +104,12 @@ const CreateTripModal = ({ onClose, onTripCreated }) => {
                   onChange={handleChange}
                   className="input-field"
                 >
+                  <option value="BDT">BDT (৳)</option>
                   <option value="USD">USD ($)</option>
                   <option value="EUR">EUR (€)</option>
                   <option value="GBP">GBP (£)</option>
                   <option value="JPY">JPY (¥)</option>
-                  <option value="CAD">CAD ($)</option>
-                  <option value="AUD">AUD ($)</option>
+                  <option value="INR">INR (₹)</option>
                 </select>
               </div>
 

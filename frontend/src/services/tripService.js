@@ -44,5 +44,10 @@ export const tripService = {
   async getSuggestedPayments(tripId) {
     const response = await api.get(`/trips/${tripId}/suggested-payments`)
     return response.data.data
+  },
+
+  async getUserBalance(tripId) {
+    const response = await api.get(`/trips/${tripId}/my-balance`)
+    return response.data.data
   }
 }
