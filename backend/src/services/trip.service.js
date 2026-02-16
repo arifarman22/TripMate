@@ -226,6 +226,19 @@ const getUserBalance = async (tripId, userId) => {
   };
 };
 
+const updateMemberDeposit = async (tripId, memberId, amount, requesterId) => {
+  const trip = await tripRepository.findById(tripId);
+  if (!trip) throw new AppError('Trip not found', 404);
+
+  const isAdmin = trip.members.some(m => m.userId === requesterId && m.role === 'admin');
+  if (!isAdmin) throw new AppError('Only team leads can update deposits', 403);
+
+  const member = trip.members.find(m => m.userId === memberId);
+  if (!member) throw new AppError('Member not found', 404);
+
+  return await tripRepository.updateMemberDeposit(tripId, memberId, amount);
+};
+
 module.exports = { 
   createTrip, 
   getUserTrips, 
@@ -236,5 +249,6 @@ module.exports = {
   removeMember, 
   calculateBalances,
   calculateSuggestedPayments,
-  getUserBalance
+  getUserBalance,
+  updateMemberDeposit
 };

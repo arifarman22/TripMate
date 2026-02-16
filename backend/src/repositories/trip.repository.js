@@ -60,4 +60,12 @@ const getExpenses = async (tripId) => {
   });
 };
 
-module.exports = { create, findById, findByUserId, update, deleteTrip, addMember, removeMember, getExpenses };
+const updateMemberDeposit = async (tripId, userId, amount) => {
+  return await prisma.tripMember.update({
+    where: { userId_tripId: { userId, tripId } },
+    data: { depositAmount: amount },
+    include: { user: { select: { id: true, name: true, email: true } } }
+  });
+};
+
+module.exports = { create, findById, findByUserId, update, deleteTrip, addMember, removeMember, getExpenses, updateMemberDeposit };

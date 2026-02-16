@@ -49,5 +49,10 @@ export const tripService = {
   async getUserBalance(tripId) {
     const response = await api.get(`/trips/${tripId}/my-balance`)
     return response.data.data
+  },
+
+  async updateMemberDeposit(tripId, userId, amount) {
+    const response = await api.put(`/trips/${tripId}/members/deposit`, { userId, amount })
+    return response.data.data
   }
 }

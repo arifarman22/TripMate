@@ -51,6 +51,11 @@ const getUserBalance = asyncHandler(async (req, res) => {
   res.json({ success: true, data: balance });
 });
 
+const updateMemberDeposit = asyncHandler(async (req, res) => {
+  const result = await tripService.updateMemberDeposit(req.params.id, req.body.userId, req.body.amount, req.user.id);
+  res.json({ success: true, data: result });
+});
+
 module.exports = { 
   createTrip, 
   getTrips, 
@@ -61,5 +66,6 @@ module.exports = {
   removeMember, 
   getBalances,
   getSuggestedPayments,
-  getUserBalance
+  getUserBalance,
+  updateMemberDeposit
 };

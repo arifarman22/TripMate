@@ -25,6 +25,7 @@ import ExpenseAnalytics from '../components/ExpenseAnalytics'
 import InviteMemberModal from '../components/InviteMemberModal'
 import MembersList from '../components/MembersList'
 import UserBalanceCard from '../components/UserBalanceCard'
+import MemberDepositManager from '../components/MemberDepositManager'
 import toast from 'react-hot-toast'
 
 const TripDetailPage = () => {
@@ -115,6 +116,8 @@ const TripDetailPage = () => {
 
   const totalSpent = expenses.reduce((sum, expense) => sum + parseFloat(expense.amount), 0)
   const budget = trip.budget ? parseFloat(trip.budget) : 0
+  const totalDeposits = trip.members.reduce((sum, m) => sum + (m.depositAmount || 0), 0)
+  const perHeadBudget = budget > 0 ? budget / trip.members.length : 0
   const budgetUsed = budget > 0 ? (totalSpent / budget) * 100 : 0
 
   const tabs = [
@@ -171,7 +174,7 @@ const TripDetailPage = () => {
       </div>
 
       {/* Trip Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
         <div className="travel-card p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -201,7 +204,7 @@ const TripDetailPage = () => {
         <div className="travel-card p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm font-medium">Budget</p>
+              <p className="text-gray-600 text-sm font-medium">Total Budget</p>
               <p className="text-3xl font-bold text-gray-900">
                 {trip.currency} {budget.toFixed(2)}
               </p>
@@ -215,11 +218,27 @@ const TripDetailPage = () => {
         <div className="travel-card p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm font-medium">Expenses</p>
-              <p className="text-3xl font-bold text-gray-900">{expenses.length}</p>
+              <p className="text-gray-600 text-sm font-medium">Per Head Budget</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {trip.currency} {perHeadBudget.toFixed(2)}
+              </p>
             </div>
             <div className="p-3 bg-purple-100 rounded-full">
-              <Receipt className="w-6 h-6 text-purple-600" />
+              <Users className="w-6 h-6 text-purple-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="travel-card p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-600 text-sm font-medium">Total Deposits</p>
+              <p className="text-2xl font-bold text-emerald-600">
+                {trip.currency} {totalDeposits.toFixed(2)}
+              </p>
+            </div>
+            <div className="p-3 bg-emerald-100 rounded-full">
+              <Receipt className="w-6 h-6 text-emerald-600" />
             </div>
           </div>
         </div>
@@ -299,13 +318,20 @@ const TripDetailPage = () => {
         )}
 
         {activeTab === 'members' && (
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-4xl mx-auto space-y-6">
             <MembersList 
               members={trip.members}
               tripId={id}
               currentUserId={user?.id}
               isAdmin={isAdmin}
               onMemberRemoved={handleMemberRemoved}
+            />
+            <MemberDepositManager
+              members={trip.members}
+              tripId={id}
+              currency={trip.currency}
+              isAdmin={isAdmin}
+              onUpdate={fetchTripData}
             />
           </div>
         )}

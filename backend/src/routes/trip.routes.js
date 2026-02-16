@@ -10,7 +10,8 @@ const {
   removeMember, 
   getBalances,
   getSuggestedPayments,
-  getUserBalance
+  getUserBalance,
+  updateMemberDeposit
 } = require('../controllers/trip.controller');
 const { protect } = require('../middlewares/auth');
 const { requireTripMember, requireTripAdmin } = require('../middlewares/tripAccess');
@@ -77,6 +78,17 @@ router.delete('/:id/members',
   ],
   requireTripAdmin,
   removeMember
+);
+
+// Update member deposit (Team Lead only)
+router.put('/:id/members/deposit',
+  [
+    body('userId').notEmpty().withMessage('User ID is required'),
+    body('amount').isFloat({ min: 0 }).withMessage('Amount must be a positive number'),
+    validate
+  ],
+  requireTripAdmin,
+  updateMemberDeposit
 );
 
 // Get balances (members only)

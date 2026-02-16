@@ -45,11 +45,12 @@ model Trip {
 }
 
 model TripMember {
-  id        String   @id @default(uuid())
-  userId    String
-  tripId    String
-  role      String   @default("member")
-  joinedAt  DateTime @default(now())
+  id            String   @id @default(uuid())
+  userId        String
+  tripId        String
+  role          String   @default("member")
+  depositAmount Float    @default(0)
+  joinedAt      DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
