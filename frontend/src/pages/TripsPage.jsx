@@ -9,33 +9,42 @@ import {
   Calendar, 
   DollarSign,
   Search,
-  Filter
+  Filter,
+  RefreshCw
 } from 'lucide-react'
 import LoadingSpinner from '../components/LoadingSpinner'
 import CreateTripModal from '../components/CreateTripModal'
 
 const TripsPage = () => {
-  const { user } = useAuth()
+  const { user, isAuthenticated } = useAuth()
   const [trips, setTrips] = useState([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [showCreateModal, setShowCreateModal] = useState(false)
 
   useEffect(() => {
-    if (user) {
+    if (isAuthenticated) {
       fetchTrips()
     }
-  }, [user])
+  }, [isAuthenticated])
 
   const fetchTrips = async () => {
     try {
+      setLoading(true)
       const data = await tripService.getTrips()
       setTrips(data)
     } catch (error) {
       console.error('Error fetching trips:', error)
     } finally {
       setLoading(false)
+      setRefreshing(false)
     }
+  }
+
+  const handleRefresh = () => {
+    setRefreshing(true)
+    fetchTrips()
   }
 
   const handleTripCreated = (newTrip) => {
@@ -60,13 +69,23 @@ const TripsPage = () => {
           <h1 className="text-3xl font-bold text-gray-900">My Trips</h1>
           <p className="text-gray-600 mt-1">Manage your travel adventures and expenses</p>
         </div>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="btn-primary mt-4 sm:mt-0 inline-flex items-center space-x-2"
-        >
-          <Plus className="w-5 h-5" />
-          <span>Create Trip</span>
-        </button>
+        <div className="flex items-center space-x-3 mt-4 sm:mt-0">
+          <button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="btn-secondary inline-flex items-center space-x-2"
+          >
+            <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
+            <span>Refresh</span>
+          </button>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="btn-primary inline-flex items-center space-x-2"
+          >
+            <Plus className="w-5 h-5" />
+            <span>Create Trip</span>
+          </button>
+        </div>
       </div>
 
       {/* Search and Filters */}
